@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Daddy 🎉</title>
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+<style>
+:root{
+  --primary:#FFD700;  /* Gold accents */
+  --secondary:#1E90FF; /* Buttons */
+  --bg:#004080; /* Solid blue background */
+  --text:#FFFFFF;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{
+  background-color: var(--bg);
+  overflow-x:hidden;
+  overflow-y:hidden;
+}
+canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+button{z-index:3;}
+.page{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+  opacity:0;
+  transform:scale(1.05);
+  transition:.8s ease;
+  pointer-events:none;
+  z-index:2;
+}
+.page.active{opacity:1;transform:scale(1);pointer-events:auto;}
+button{
+  padding:14px 28px;
+  font-size:clamp(16px,3vw,18px);
+  border:none;
+  border-radius:30px;
+  background:var(--secondary);
+  color:white;
+  cursor:pointer;
+  transition:.4s;
+  margin-top:15px;
+}
+button:hover{background:#0066cc;}
+button.disabled{opacity:.4;pointer-events:none;}
+
+/* PAGE 1 ANIMATION */
+.first-text{display:flex;flex-direction:column;gap:10px;align-items:center;}
+.line{
+  color:#FFFFFF;
+  font-size:clamp(3rem,10vw,5rem);
+  opacity:0;
+  transform:translateY(50px) scale(0.8);
+  text-shadow:0 3px 10px rgba(0,0,0,0.3);
+  animation-fill-mode:forwards;
+}
+.line1{animation:slideFade 0.8s ease-out 0.3s forwards;}
+.line2{animation:slideFade 0.8s ease-out 0.6s forwards;}
+.line3{animation:slideFade 0.8s ease-out 0.9s forwards;}
+@keyframes slideFade{
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* CAKE PAGE */
+.cake{width:min(180px,70vw);height:90px;background:#ffcc80;border-radius:20px;position:relative;margin-bottom:15px;}
+.cake.cut::after{content:'';position:absolute;left:50%;width:3px;height:100%;background:#c77;animation:cut .6s;}
+@keyframes cut{from{height:0}to{height:100%}}
+.candle{width:10px;height:28px;background:red;position:absolute;top:-28px;left:50%;transform:translateX(-50%);}
+.candle::after{
+  content:'';
+  position:absolute;
+  top:-10px;
+  left:0;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  opacity:0;
+  background: radial-gradient(circle at 50% 50%, yellow, orange, red);
+  filter:blur(2px);
+  transform-origin:bottom center;
+}
+.candle::before{
+  content:'';
+  position:absolute;
+  top:-20px;
+  left:-5px;
+  width:20px;
+  height:20px;
+  background: radial-gradient(circle, yellow, orange, transparent 70%);
+  border-radius:50%;
+  opacity:0;
+}
+.candle.lit::after{
+  opacity:1;
+  animation:flameFlicker 0.15s infinite, flameMove 1s infinite alternate;
+}
+.candle.lit::before{
+  opacity:0.6;
+  animation:glowFlicker 0.3s infinite;
+}
+@keyframes flameFlicker{
+  0%{transform:scale(1) translateY(0);}
+  25%{transform:scale(1.1) translateY(-1px);}
+  50%{transform:scale(0.9) translateY(0);}
+  75%{transform:scale(1.05) translateY(-2px);}
+  100%{transform:scale(1) translateY(0);}
+}
+@keyframes flameMove{0%{transform:translateY(0);}100%{transform:translateY(-6px);}}
+@keyframes glowFlicker{0%,100%{opacity:0.6; transform:scale(1);}50%{opacity:0.8; transform:scale(1.2);}}
+
+.candle-text{margin-top:10px;color:var(--primary);opacity:0;animation:glow 1.5s infinite alternate;}
+@keyframes glow{from{text-shadow:0 0 5px gold}to{text-shadow:0 0 20px gold}}
+.knife{width:80px;height:6px;background:silver;position:absolute;top:50%;left:-100px;border-radius:4px;display:none;}
+.knife.animate{display:block;animation:knife 1s forwards;}
+@keyframes knife{to{left:120%}}
+
+/* GALLERY PAGE SWIPER */
+.swiper-container {
+  width: 90vw;
+  height: 60vh;
+  margin: 20px auto;
+}
+.swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit:cover;
+  border-radius: 15px;
+}
+
+/* LETTER PAGE */
+.letter{background:white;color:#333;padding:25px;border-radius:20px;max-width:600px;text-align:left;line-height:1.5;font-size:clamp(14px,3vw,16px);}
+
+/* VIDEO PAGE */
+video{width:100%;max-width:1000px;height:auto;border-radius:15px;}
+
+/* FINAL FIREWORK PAGE */
+.firework-text{position:absolute;color:var(--primary);font-size:clamp(16px,4vw,36px);font-weight:bold;text-shadow:0 0 5px #fff,0 0 10px gold;animation:fall 10s linear infinite;}
+@keyframes fall{
+  0%{top:-50px;opacity:0}
+  10%{opacity:1}
+  100%{top:110%;opacity:0}
+}
+
+.music{position:fixed;top:15px;right:15px;z-index:6;font-size:18px;padding:10px 14px;}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<canvas id="fx"></canvas>
+
+<button class="music" id="musicBtn">🔊</button>
+
+<!-- PAGE 1 -->
+<section class="page active" id="p1">
+  <div class="first-text">
+    <h1 class="line line1">Happy</h1>
+    <h1 class="line line2">Birthday</h1>
+    <h1 class="line line3">Daddy 🎉</h1>
+  </div>
+  <button id="startBtn" style="display:none">Let’s Celebrate 🎊</button>
+</section>
+
+<!-- PAGE 2 CAKE -->
+<section class="page" id="p2">
+  <div class="cake" id="cake">
+    <div class="candle" id="candle"></div>
+    <div class="knife" id="knife"></div>
+  </div>
+  <div class="candle-text" id="candleText">✨ Candle Lit ✨</div>
+  <button id="lightBtn">Light Candle 🕯️</button>
+  <button id="cutBtn" style="display:none">Cut Cake 🎂</button>
+  <button class="backBtn" data-back="p1">⬅ Back</button>
+</section>
+
+<!-- PAGE 3 GALLERY SWIPER -->
+<section class="page" id="p3">
+  <audio id="galleryMusic" src="gallery-music.mp3" loop></audio>
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide"><img src="Image 1.jpg" alt="Image 1"></div>
+      <div class="swiper-slide"><img src="Image 2.jpg" alt="Image 2"></div>
+      <div class="swiper-slide"><img src="Image 3.jpg" alt="Image 3"></div>
+      <div class="swiper-slide"><img src="Image 4.jpg" alt="Image 4"></div>
+      <div class="swiper-slide"><img src="Image 5.jpg" alt="Image 5"></div>
+      <div class="swiper-slide"><img src="Image 6.jpg" alt="Image 6"></div>
+      <div class="swiper-slide"><img src="Image 7.jpg" alt="Image 7"></div>
+      <div class="swiper-slide"><img src="Image 8.jpg" alt="Image 8"></div>
+      <div class="swiper-slide"><img src="Image 9.jpg" alt="Image 9"></div>
+      <div class="swiper-slide"><img src="Image 10.jpg" alt="Image 10"></div>
+      <div class="swiper-slide"><img src="Image 11.jpg" alt="Image 11"></div>
+      <div class="swiper-slide"><img src="Image 12.jpg" alt="Image 12"></div>
+      <div class="swiper-slide"><img src="Image 13.jpg" alt="Image 13"></div>
+    </div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+  </div>
+  <button id="letterBtn">Read Letter 💌</button>
+  <button class="backBtn" data-back="p2">⬅ Back</button>
+</section>
+
+<!-- PAGE 4 LETTER -->
+<section class="page" id="p4">
+  <div class="letter">
+    <h2>प्रिय बुबा ❤️</h2>
+    <p>
+      विश्वकै अद्भुत बुबालाई जन्मदिनको हार्दिक शुभकामना!<br><br>
+      तपाईं हाम्रो परिवारको स्तम्भ, मार्गदर्शक र सधैंको प्रेरणा हुनुहुन्छ। तपाईंको माया, बुद्धि र बलिदानले हामीलाई आजको हामी बनायो, र तपाईंको हाँसोले सबै अँध्यारो दिनलाई पनि उज्यालो बनाउँछ।<br><br>
+      मैले केही माग्नुअघि नै तपाईंले मलाई सबै कुरा दिनुभयो।<br><br>
+      तपाईंले देख्नुभएको हरेक सपना म पूरा गर्न सकूँ भन्ने मेरो सधैंको आशा छ।<br><br>
+      हामीलाई शक्ति, दयालुता र धैर्य सिकाएकोमा धन्यवाद। हामी सधैं तपाईंको माया र साथमा सुरक्षित महसुस गर्छौं। आजको दिन तपाईंको हो — जसले प्रत्येक पललाई विशेष बनाउँछ।<br><br>
+      सधैं खुशी रहनुहोस्, स्वस्थ रहनुहोस्, र सधैं यस्तै मुस्कुराइरहनुहोस्।<br><br>
+      सधैं र सदा खुशी रहनुहोस्, बुबा।<br><br>
+      जन्मदिनको धेरै धेरै शुभकामना! 🎉🎂💖
+    </p>
+  </div>
+  <button id="videoBtn">Final Surprise 🎥</button>
+  <button class="backBtn" data-back="p3">⬅ Back</button>
+</section>
+
+<!-- PAGE 5 VIDEO -->
+<section class="page" id="p5">
+  <h2>Final Video 🎥</h2>
+  <video controls>
+    <source src="surprise.mp4" type="video/mp4">
+  </video>
+  <button class="backBtn" data-back="p4">⬅ Back</button>
+</section>
+
+<!-- PAGE 6 FINAL FIREWORKS -->
+<section class="page" id="p6"></section>
+
+<audio id="song" src="background.mp3" loop></audio>
+<audio id="candleSfx" src="aud.mp3"></audio>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+
+<script>
+// ELEMENTS
+const startBtn=document.getElementById('startBtn');
+const lightBtn=document.getElementById('lightBtn');
+const cutBtn=document.getElementById('cutBtn');
+const candle=document.getElementById('candle');
+const candleText=document.getElementById('candleText');
+const knife=document.getElementById('knife');
+const cake=document.getElementById('cake');
+const musicBtn=document.getElementById('musicBtn');
+const song=document.getElementById('song');
+const letterBtn=document.getElementById('letterBtn');
+
+// PAGE CONTROL
+const show=id=>{
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const galleryMusic=document.getElementById('galleryMusic');
+  if(id==='p3'){galleryMusic.play();}
+  else{galleryMusic.pause();galleryMusic.currentTime=0;}
+};
+
+// FIRST PAGE ANIMATION
+setTimeout(()=>{startBtn.style.display='block';},1700);
+
+// MUSIC (autoplay background from start with fallback)
+let play=true;
+song.play().catch(()=>{});
+musicBtn.textContent='🔇';
+document.addEventListener('click',()=>{song.play().catch(()=>{})},{once:true});
+musicBtn.onclick=()=>{play=!play;song[play?'play':'pause']();musicBtn.textContent=play?'🔇':'🔊';};
+
+// CAKE EVENTS
+startBtn.onclick=()=>show('p2');
+lightBtn.onclick=()=>{
+  candle.classList.add('lit');
+  candleText.style.opacity=1;
+  lightBtn.classList.add('disabled');
+  cutBtn.style.display='block';
+  try{candleSfx.currentTime=0;candleSfx.play();}catch(e){}
+};
+cutBtn.onclick=()=>{
+  knife.classList.add('animate');
+  cake.classList.add('cut');
+  fireworkText();
+  setTimeout(()=>show('p3'),1200);
+};
+
+// BACK BUTTONS
+document.querySelectorAll('.backBtn').forEach(b=>b.onclick=()=>show(b.dataset.back));
+letterBtn.onclick=()=>show('p4');
+document.getElementById('videoBtn').onclick=()=>{show('p5');fireworkText();};
+
+// STARS BACKGROUND
+const sc=document.getElementById('stars'),sctx=sc.getContext('2d');
+function resize(){sc.width=window.innerWidth;sc.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+let stars=Array.from({length:200},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2}));
+(function starAnim(){sctx.clearRect(0,0,sc.width,sc.height);stars.forEach(s=>{sctx.fillStyle='white';sctx.fillRect(s.x,s.y,s.r,s.r)});requestAnimationFrame(starAnim);})();
+
+// FINAL FIREWORK TEXT
+function fireworkText(){
+  const p6=document.getElementById('p6');p6.innerHTML='';
+  for(let i=0;i<20;i++){
+    const t=document.createElement('div');
+    t.className='firework-text';
+    t.textContent=i%2===0?'Happy Birthday Daddy':'Happy Birthday Papa';
+    t.style.left=Math.random()*90+'vw';
+    t.style.animationDuration=(5+Math.random()*5)+'s';
+    t.style.fontSize=(16+Math.random()*20)+'px';
+    p6.appendChild(t);
+  }
+}
+
+// SWIPER
+const swiper = new Swiper('.swiper-container',{
+  slidesPerView:1,
+  spaceBetween:20,
+  loop:true,
+  navigation:{nextEl:'.swiper-button-next',prevEl:'.swiper-button-prev'},
+  autoplay:{delay:3000,disableOnInteraction:false}
+});
+</script>
+</body>
+</html>
